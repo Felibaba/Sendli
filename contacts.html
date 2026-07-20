@@ -184,6 +184,7 @@
       border-radius:12px;
       box-shadow:0 4px 20px rgba(0,0,0,0.07);
       overflow:hidden;
+      overflow-x:auto;
     }
     table { width:100%; border-collapse:collapse; }
     th {
@@ -194,8 +195,9 @@
       color:var(--gray-800);
       font-size:14px;
       border-bottom:2px solid #eee;
+      white-space:nowrap;
     }
-    td { padding:16px 20px; border-bottom:1px solid #eee; font-size:15px; }
+    td { padding:16px 20px; border-bottom:1px solid #eee; font-size:15px; white-space:nowrap; }
     tr:hover { background:#f8fbff; }
     .status {
       padding:5px 12px;
@@ -206,6 +208,18 @@
     .status.active { background:#d4edda; color:#155724; }
     .status.inactive { background:#f8d7da; color:#721c24; }
     .status.unsubscribed { background:#e2e3e5; color:#6c757d; }
+
+    .tg-username {
+      color:var(--primary);
+      font-weight:500;
+    }
+    .tg-username i {
+      margin-right:6px;
+      color:#229ED9;
+    }
+    .no-tg {
+      color:#aaa;
+    }
 
     input[type="checkbox"] {
       transform:scale(1.3);
@@ -274,13 +288,14 @@
               <th><input type="checkbox" id="selectAll"></th>
               <th>Name</th>
               <th>Email or Number</th>
+              <th>Telegram</th>
               <th>Status</th>
               <th>Subscribed</th>
             </tr>
           </thead>
           <tbody id="contactsBody">
             <tr>
-              <td colspan="5" style="text-align:center; padding:80px; color:#888;">
+              <td colspan="6" style="text-align:center; padding:80px; color:#888;">
                 Loading contacts...
               </td>
             </tr>
@@ -339,7 +354,7 @@
         const data = await res.json();
 
         if (!data.contacts || data.contacts.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:80px;color:#888;">No contacts yet.<br><br>Create a form and start collecting!</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:80px;color:#888;">No contacts yet.<br><br>Create a form and start collecting!</td></tr>';
           return;
         }
 
@@ -360,10 +375,15 @@
 
           const subscribedDate = c.subscribedAt ? new Date(c.subscribedAt).toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'}) : '—';
 
+          const tgCell = c.telegramUsername
+            ? '<span class="tg-username"><i class="fab fa-telegram"></i>@' + escapeHtml(c.telegramUsername) + '</span>'
+            : '<span class="no-tg">—</span>';
+
           rows += '<tr>' +
             '<td><input type="checkbox" class="contact-check" data-contact="' + escapeHtml(c.contact) + '"></td>' +
             '<td>' + escapeHtml(c.name) + '</td>' +
             '<td>' + escapeHtml(c.contact) + '</td>' +
+            '<td>' + tgCell + '</td>' +
             '<td><span class="status ' + statusClass + '">' + statusText + '</span></td>' +
             '<td>' + subscribedDate + '</td>' +
             '</tr>';
@@ -373,7 +393,7 @@
         attachCheckboxListeners();
 
       } catch (err) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:80px;color:red;">Error loading contacts.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:80px;color:red;">Error loading contacts.</td></tr>';
       }
     }
 
@@ -477,4 +497,4 @@
     };
   </script>
 </body>
-</html> 
+</html>
